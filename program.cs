@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Sql2Mongo2
+namespace Transfer2Mongo
 {
     class Program2
     {
