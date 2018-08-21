@@ -30,7 +30,7 @@ namespace Sql2Mongo2
                 }
             }
             
-            List<Mongo.Customer> Customers = new List<Mongo.Customer.Customer>();  // Customer model from Mongo
+            List<Mongo.Customer> Customers = new List<Mongo.Customer>();  // Customer model from Mongo
             List<Mongo.Customer.ContactCredential> creds = new List<Mongo.Customer.ContactCredential>();
 
             foreach (var Cust in result.CustomersList)
