@@ -31,15 +31,14 @@ namespace Transfer2Mongo
             }
             
             List<Mongo.Customer> Customers = new List<Mongo.Customer>();  // Customer model from Mongo
-            List<Mongo.Customer.ContactCredential> creds = new List<Mongo.Customer.ContactCredential>();
 
             foreach (var Cust in result.CustomersList)
             {
                 Mongo.Customer.Customer customer = new Mongo.Customer.Customer();
 
-                customer.CustomerID = Cust.Internal_Object_Id.Trim();
-                customer.External_Ref = Cust.External_Object_Id.Trim();
-                customer.CompanyName = Cust.CompanyName.Trim();
+                customer.CustID = Cust.CustID.Trim();
+                customer.Ref = Cust.Ref.Trim();
+                customer.Company = Cust.Company.Trim();
                 
                 // transfer account info to Model.Customer.Account
                 var acc2 = Cust.Account;
@@ -47,16 +46,16 @@ namespace Transfer2Mongo
                 {
                     Mongo.Customer.Account acc = new Mongo.Customer.Account();
                     acc.AccountType = acc2.Type.Trim();
-                    acc.CreditLimit = acc2.CreditLimit != null ? Convert.ToDecimal(acc2.CreditLimit.Trim()) : 0;
-                    acc.AvailableCredit = acc2.AvailableCredit != null ? Convert.ToDecimal(acc2.AvailableCredit.Trim()) : 0;
+                    acc.CreditLim = acc2.CreditLim != null ? Convert.ToDecimal(acc2.CreditLim.Trim()) : 0;
+                    acc.Credit = acc2.Credit != null ? Convert.ToDecimal(acc2.Credit.Trim()) : 0;
                     acc.OnStop = acc2.OnStop != null ? Convert.ToBoolean(acc2.OnStop) : false;
-                    acc.DiscountGroup = acc2.DiscountGroup != null ? Int32.Parse(acc2.DiscountGroup.Trim()) : 0;
+                    acc.Disc = acc2.Disc != null ? Int32.Parse(acc2.Disc.Trim()) : 0;
                     acc.DisplayExVAT = acc2.DisplayExVAT != null ? Convert.ToBoolean(acc2.DisplayExVAT) : false;
                     if (acc.VAT != null)
                     {
                         Mongo.Customer.VAT vat = new Mongo.Customer.VAT();
                         vat.CountryCode = acc.VAT.CountryCode.Trim();
-                        vat.RegistrationNumber = acc.VAT.RegistrationNumber.Trim();
+                        vat.RegNo = acc.VAT.RegNo.Trim();
                     }
                     customer.Account = acc;
                 }
@@ -75,18 +74,18 @@ namespace Transfer2Mongo
                     customer.Marketing = mkt;
                 }
                 
-                // transfer account info to Model.Customer.ASsociatedParties
+                // transfer account info to Model.Customer.Associated
                 if (Cust.AssociationParties != null)
                 {
-                    List<Mongo.Customer.AssociatedParty> aps = new List<Mongo.Customer.AssociatedParty>();
+                    List<Mongo.Customer.Associated> aps = new List<Mongo.Customer.Associated>();
                     foreach (var asP in Cust.AssociationParties)
                     {
-                        Mongo.Customer.AssociatedParty ap = new Mongo.Customer.AssociatedParty();
+                        Mongo.Customer.Associated ap = new Mongo.Customer.Associated();
                         ap.Type = asP.Type.Trim();
                         ap.Value = asP.Value.Trim();
                         aps.Add(ap);
                     }
-                    customer.AssociatedParties = aps;
+                    customer.Associated = aps;
                 }
                 
                 // transfer account info to Model.Customer.Addresses
@@ -98,8 +97,8 @@ namespace Transfer2Mongo
                         Mongo.Customer.CustomerAddress cs = new Mongo.Customer.CustomerAddress();
                         cs.AddressID = cs2.AddressID.Trim();
                         cs.AddressType = cs2.AddressType.Trim();
-                        cs.AddressLine1 = cs2.AddressLine1.Trim();
-                        cs.AddressLine2 = cs2.AddressLine2.Trim();
+                        cs.AddLine1 = cs2.AddLine1.Trim();
+                        cs.AddLine2 = cs2.AddLine2.Trim();
                         try
                         {
                             cs.DefaultAddress = Convert.ToBoolean(cs2.DefaultAddress);
@@ -108,7 +107,7 @@ namespace Transfer2Mongo
                         {
                             cs.DefaultAddress = false;
                         }
-                        cs.CompanyName = cs2.CompanyName.Trim();
+                        cs.Company = cs2.Company.Trim();
                         cs.Town = cs2.Town == null ? "" : cs2.Town.Trim();
                         cs.Postcode = cs2.Postcode.Trim();
                         cs.Country = cs2.Country.Trim();
@@ -127,11 +126,11 @@ namespace Transfer2Mongo
                         con.ContactID = con2.ContactID.Trim();
                         try
                         {
-                            con.DefaultContact = Convert.ToBoolean(con2.DefaultContact);
+                            con.Default = Convert.ToBoolean(con2.Default);
                         }
                         catch
                         {
-                            con.DefaultContact = false;
+                            con.Default = false;
                         }
                         con.FullName = con2.FullName.Trim();
                         con.ContactPosition = con2.ContactPosition.Trim();
@@ -170,14 +169,14 @@ namespace Transfer2Mongo
 
     public class Customer
     {
-        [XmlElement("Internal_Object_Id")]
-        public string Internal_Object_Id { get; set; }
+        [XmlElement("CustID")]
+        public string CustID { get; set; }
 
-        [XmlElement("External_Object_Id")]
-        public string External_Object_Id { get; set; }
+        [XmlElement("Ref")]
+        public string Ref { get; set; }
 
-        [XmlElement("CompanyName")]
-        public string CompanyName { get; set; }
+        [XmlElement("Company")]
+        public string Company { get; set; }
 
         [XmlElement("Account")]
         public Account Account { get; set; }
@@ -185,9 +184,9 @@ namespace Transfer2Mongo
         [XmlElement("Marketing")]
         public Marketing Marketing { get; set; }
 
-        [XmlArray("AssociatedParties")]
-        [XmlArrayItem("AssociatedParty", typeof(AssociatedParty))]
-        public List<AssociatedParty> AssociationParties { get; set; }
+        [XmlArray("Associated")]
+        [XmlArrayItem("Associated", typeof(Associated))]
+        public List<Associated> AssociationParties { get; set; }
 
         [XmlArray("Addresses")]
         [XmlArrayItem("Address", typeof(CustomerAddress))]
@@ -203,17 +202,17 @@ namespace Transfer2Mongo
         [XmlElement("Type")]
         public string Type { get; set; } //cash or credit
 
-        [XmlElement("CreditLimit")]
-        public string CreditLimit { get; set; }
+        [XmlElement("CreditLim")]
+        public string CreditLim { get; set; }
 
-        [XmlElement("AvailableCredit")]
-        public string AvailableCredit { get; set; }
+        [XmlElement("Credit")]
+        public string Credit { get; set; }
 
         [XmlElement("OnStop")]
         public string OnStop { get; set; }
 
-        [XmlElement("DiscountGroup")]
-        public string DiscountGroup { get; set; }
+        [XmlElement("Disc")]
+        public string Disc { get; set; }
 
         [XmlElement("DisplayExVAT")]
         public string DisplayExVAT { get; set; }
@@ -227,8 +226,8 @@ namespace Transfer2Mongo
         [XmlElement("CountryCode")]
         public string CountryCode { get; set; }
 
-        [XmlElement("RegistrationNumber")]
-        public string RegistrationNumber { get; set; }
+        [XmlElement("RegNo")]
+        public string RegNo { get; set; }
     }
 
     public class Marketing
@@ -249,10 +248,10 @@ namespace Transfer2Mongo
         public string OptInDate { get; set; }
     }
 
-    public class AssociatedParty
+    public class Associated
     {
         [XmlElement("Type")]
-        public string Type { get; set; } //paypal/ebay
+        public string Type { get; set; }
 
         [XmlElement("Value")]
         public string Value { get; set; }
@@ -269,16 +268,16 @@ namespace Transfer2Mongo
         [XmlElement("Default")]
         public string DefaultAddress { get; set; }
 
-        [XmlElement("CompanyName")]
-        public string CompanyName { get; set; }
+        [XmlElement("Company")]
+        public string Company { get; set; }
 
-        [XmlElement("AddressLine1")]
-        public string AddressLine1 { get; set; }
+        [XmlElement("AddLine1")]
+        public string AddLine1 { get; set; }
 
-        [XmlElement("AddressLine2")]
-        public string AddressLine2 { get; set; }
+        [XmlElement("AddLine2")]
+        public string AddLine2 { get; set; }
 
-        [XmlElement("TownStep")]
+        [XmlElement("Town")]
         public string Town { get; set; }
 
         [XmlElement("Postcode")]
@@ -294,7 +293,7 @@ namespace Transfer2Mongo
         public string ContactID { get; set; }
 
         [XmlElement("Default")]
-        public string DefaultContact { get; set; }
+        public string Default { get; set; }
 
         [XmlElement("FullName")]
         public string FullName { get; set; }
